@@ -42,16 +42,43 @@ class App extends React.Component {
     }));
   };
 
-  handleDoubleClick = (itemId) => {
+
+ 
+
+  handleDeleteItem = (itemId) => {
+    const {list} = this.state.filter(item => item.itemId != itemId);
+    this.setState({ list });
+  };
+
+  handleDeleteCompleted = () => {
+    const {list} = this.state.filter(item => !item.completed);
+    this.setState({ list });
+  };
+
+  filterList = (filter) => {
+    this.setState({ filter });
+  };
+
+  handleToggleAll = () => {
+    const allCompleted = this.state.list.every(item => item.completed);
+    this.setState(prevState => ({
+      list: prevState.list.map(item => ({
+        ...item,
+        completed: !allCompleted
+      }))
+    }));
+  };
+  
+  handleEdit = (itemId) => {
     this.setState(prevState => ({
       list: prevState.list.map(item => {
         if (item.itemId === itemId) {
-          return { ...item, newContent: item.content, editing: true };
-        } else {
-          return { ...item, newContent: item.content, editing: false };
+          return { ...item, content: item.newContent};
         }
+        return item;
       })
     }));
+    // this.setState({isEditing:false});
   };
 
   handleOnChange = (itemId, newContent) => {
@@ -65,53 +92,16 @@ class App extends React.Component {
     }));
   };
 
-  handleEdit = (itemId) => {
-    this.setState(prevState => ({
-      list: prevState.list.map(item => {
-        if (item.itemId === itemId) {
-          return { ...item, content: item.newContent, editing: false };
-        }
-        return item;
-      })
-    }));
-  };
-
-  handleDeleteItem = (itemId) => {
-    const newList = this.state.list.filter(item => item.itemId != itemId);
-    this.setState({ list: newList });
-  };
-
-  handleDeleteCompleted = () => {
-    const newList = this.state.list.filter(item => !item.completed);
-    this.setState({ list: newList });
-  };
-
-  filterList = (filter) => {
-    this.setState({ filter });
-  };
-
-  handleToggleAll = () => {
-    const allCompleted = this.state.list.every(item => item.completed);
-    console.log(this.state.list);
-    this.setState(prevState => ({
-      list: prevState.list.map(item => ({
-        ...item,
-        completed: !allCompleted
-      }))
-    }));
-  };
 
   render() {
     return (
       <div className="todo">
         <Header addItem={this.addItemToList} />
-        {/* <Content list={this.state.list} 
-        /> */}
         <Content
           list={this.state.list}
           filter={this.state.filter}
           handleIsActive={this.handleIsActive}
-          handleDoubleClick={this.handleDoubleClick}
+          // handleDoubleClick={this.handleDoubleClick}
           handleOnChange={this.handleOnChange}
           handleEdit={this.handleEdit}
           handleDeleteItem={this.handleDeleteItem}

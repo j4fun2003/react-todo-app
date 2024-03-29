@@ -123,6 +123,10 @@ footer .clear-completed:hover {
   visibility: visible;
 }
 
+.todo-item:hover .fa-pencil-square-o{
+  visibility: visible;
+}
+
 footer.text-center {
   margin-top: 60px;
   font-size: 11px;
@@ -133,6 +137,10 @@ footer.text-center {
   visibility: hidden;
 }
 
+.fa-pencil-square-o{
+  visibility: hidden;
+}
+
 .completed label {
   text-decoration: line-through;
   color: #949494;
@@ -140,4 +148,27 @@ footer.text-center {
 
 .filters .selected {
   border: 1px solid #ce4646;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  background-color: #fff;
+}
+
+.pagination button{
+  background-color: #fff;
+  padding: 10px 20px;
+  font-size: 1em;
+  border: .2px solid #b83f45;
+}
+
+.pagination button:hover{
+  background-color: #b83f45;
+  color: white;
+}
+
+.pagination .selected{
+  background-color: #b83f45;
+  color: white;
 }

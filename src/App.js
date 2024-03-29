@@ -18,7 +18,8 @@ class App extends React.Component {
     super(props);
     this.state = {
       list: [],
-      filter: ''
+      filter: FILTER.ALL,
+      selectedItem: null
     };
   }
 
@@ -42,16 +43,13 @@ class App extends React.Component {
     }));
   };
 
-
- 
-
   handleDeleteItem = (itemId) => {
-    const {list} = this.state.filter(item => item.itemId != itemId);
+    const list = this.state.list.filter(item => item.itemId !== itemId);
     this.setState({ list });
   };
 
   handleDeleteCompleted = () => {
-    const {list} = this.state.filter(item => !item.completed);
+    const list = this.state.list.filter(item => !item.completed);
     this.setState({ list });
   };
 
@@ -68,35 +66,57 @@ class App extends React.Component {
       }))
     }));
   };
-  
-  handleEdit = (itemId) => {
+
+  // handleEdit = (itemId) => {
+  //   this.setState(prevState => ({
+  //     list: prevState.list.map(item => {
+  //       if (item.itemId === itemId) {
+  //         return { ...item, content: item.newContent};
+  //       }
+  //       return item;
+  //     })
+  //   }));
+  //   // this.setState({isEditing:false});
+  // };
+
+  // handleOnChange = (itemId, newContent) => {
+  //   this.setState(prevState => ({
+  //     list: prevState.list.map(i => {
+  //       if (i.itemId === itemId) {
+  //         return { ...i, newContent: newContent };
+  //       }
+  //       return i;
+  //     })
+  //   }));
+  // };
+
+  selectItem = (itemId) => {
+    const selectedItem = this.state.list.find(item => item.itemId === itemId);
+    this.setState({ selectedItem });
+  }
+
+  updateItem = (updatedValue) => {
+    const { selectedItem } = this.state;
     this.setState(prevState => ({
       list: prevState.list.map(item => {
-        if (item.itemId === itemId) {
-          return { ...item, content: item.newContent};
+        if (item.itemId === selectedItem.itemId) {
+          return { ...item, content: updatedValue };
+        } else {
+          return item;
         }
-        return item;
-      })
+      }),
+      selectedItem : null
     }));
-    // this.setState({isEditing:false});
-  };
-
-  handleOnChange = (itemId, newContent) => {
-    this.setState(prevState => ({
-      list: prevState.list.map(i => {
-        if (i.itemId === itemId) {
-          return { ...i, newContent: newContent };
-        }
-        return i;
-      })
-    }));
-  };
+  }
 
 
   render() {
     return (
       <div className="todo">
-        <Header addItem={this.addItemToList} />
+        <Header
+          addItem={this.addItemToList}
+          selectedItem={this.state.selectedItem}
+          updateItem={this.updateItem} />
         <Content
           list={this.state.list}
           filter={this.state.filter}
@@ -106,6 +126,7 @@ class App extends React.Component {
           handleEdit={this.handleEdit}
           handleDeleteItem={this.handleDeleteItem}
           handleToggleAll={this.handleToggleAll}
+          selectItem={this.selectItem}
         />
         <Footer
           list={this.state.list}

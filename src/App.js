@@ -30,7 +30,7 @@ class App extends React.Component {
     }));
   };
 
-  handleIsActive = (itemId) => {
+  handleStatus = (itemId) => {
     this.setState(prevState => ({
       list: prevState.list.map(item => {
         if (item.itemId === itemId) {
@@ -67,29 +67,6 @@ class App extends React.Component {
     }));
   };
 
-  // handleEdit = (itemId) => {
-  //   this.setState(prevState => ({
-  //     list: prevState.list.map(item => {
-  //       if (item.itemId === itemId) {
-  //         return { ...item, content: item.newContent};
-  //       }
-  //       return item;
-  //     })
-  //   }));
-  //   // this.setState({isEditing:false});
-  // };
-
-  // handleOnChange = (itemId, newContent) => {
-  //   this.setState(prevState => ({
-  //     list: prevState.list.map(i => {
-  //       if (i.itemId === itemId) {
-  //         return { ...i, newContent: newContent };
-  //       }
-  //       return i;
-  //     })
-  //   }));
-  // };
-
   selectItem = (itemId) => {
     const selectedItem = this.state.list.find(item => item.itemId === itemId);
     this.setState({ selectedItem });
@@ -120,8 +97,7 @@ class App extends React.Component {
         <Content
           list={this.state.list}
           filter={this.state.filter}
-          handleIsActive={this.handleIsActive}
-          // handleDoubleClick={this.handleDoubleClick}
+          handleStatus={this.handleStatus}
           handleOnChange={this.handleOnChange}
           handleEdit={this.handleEdit}
           handleDeleteItem={this.handleDeleteItem}

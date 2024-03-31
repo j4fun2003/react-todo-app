@@ -12,29 +12,32 @@ class Content extends React.Component {
     }
   }
 
-  handleEdit = (value) => {
-    this.setState({ inputValue: value });
-  };
-
   handlePageClick = (pageNumber) => {
     this.setState({ currentPage: pageNumber});
   };
 
+  filterList = (list, filter) => {
+    if (filter === FILTER.ACTIVE) { 
+      return list.filter(item => !item.completed);
+    } else if (filter === FILTER.COMPLETED) {
+      return list.filter(item => item.completed);
+    }
+    return list;
+  };
+
+  paginateList = (list, currentPage, pageSize) => {
+    const firstItem = (currentPage - 1) * pageSize;
+    const lastItem = currentPage * pageSize;
+    return list.slice(firstItem, lastItem);
+  };
+
   render() {
-    console.log("currentPage",this.state.currentPage);
-    console.log('list',this.props.list);
     const totalPages = Math.ceil(this.props.list.length / PAGE_SIZE);
     const { filter } = this.props;
-    let filteredList = this.props.list;
-    if (filter === FILTER.ACTIVE) {
-      filteredList = filteredList.filter(item => !item.completed);
-    } else if (filter === FILTER.COMPLETED) {
-      filteredList = filteredList.filter(item => item.completed);
-    }
-    const displayedList = filteredList.slice(
-      (this.state.currentPage - 1) * PAGE_SIZE,
-      this.state.currentPage * PAGE_SIZE
-    );
+    let filteredList = this.filterList(this.props.list, filter);
+    const displayedList = this.paginateList(filteredList, this.state.currentPage, PAGE_SIZE);
+    console.log("currentPage",this.state.currentPage);
+    console.log('list',this.props.list);
     console.log("displayList", displayedList)
 
     return (
@@ -45,14 +48,12 @@ class Content extends React.Component {
         <ul id="todo-list">
           {displayedList.map((item) =>
             <TodoItem
-              onEdit={this.handleEdit}
               list={this.props.list}
               item={item}
               key={item.itemId}
-              //  handleDoubleClick={this.props.handleDoubleClick}
               handleOnChange={this.props.handleOnChange}
               handleEdit={this.props.handleEdit}
-              handleIsActive={this.props.handleIsActive}
+              handleStatus={this.props.handleStatus}
               handleDeleteItem={this.props.handleDeleteItem} 
               selectItem={this.props.selectItem}/>
           )}

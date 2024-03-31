@@ -3,29 +3,26 @@ import React, { Component } from "react";
 class Page extends Component {
     constructor(props) {
         super(props);
-
+        this.buttonRef = React.createRef();
     }
 
-    render() {
-        const {handlePageClick,totalPages,currentPage} = this.props;
-        const pageButtons = [];
-        for (let i = 1; i <= totalPages; i++) {
-            pageButtons.push(
+
+render() {
+    const { handlePageClick, totalPages, currentPage } = this.props;
+    return (
+        <div className="pagination">
+            {Array.from({ length: totalPages }, (_, index) => (
                 <button
-                    key={i}
-                    className={i === currentPage ? "selected" : ""}
-                    onClick={() => handlePageClick(i)}
+                    ref={this.buttonRef}
+                    key={index + 1}
+                    className = { index + 1 === currentPage ? "selected" : "" }
+                    onClick={() => handlePageClick(index + 1)}
                 >
-                    {i}
+                    {index + 1}
                 </button>
-            );
-        }
-        return (
-            <div className="pagination">
-               {pageButtons}
-            </div>
-        );
-    }
+            ))}
+        </div>
+    );
 }
-
+}
 export default Page;

@@ -14,6 +14,14 @@ class Header extends React.Component {
     }
   }
 
+  // onEdit = (itemId) => {
+  //   if(itemId){
+  //     this.props.updateItem(this.inputRef.current.value);
+  //   }else{
+  //     this.props.addItem(this.inputRef.current.value);
+  //   }
+  // }
+
   handleOnkey = (event) => {
     console.log(this.inputRef.current.value);
     if (event.key === "Enter") {

@@ -1,72 +1,76 @@
 import React from 'react';
-import { FILTER } from '../App';
 import TodoItem from './TodoItem';
-import Page from './Page';
+import PropTypes from 'prop-types';
 
-const PAGE_SIZE = 5;
+export const limit = 5;
 class Content extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentPage: 1,
+      page: 1,
     }
   }
 
-  handlePageClick = (pageNumber) => {
-    this.setState({ currentPage: pageNumber});
-  };
+  componentDidMount() {
+    window.addEventListener('scroll', this.handleScrollToEnd);
+  }
 
-  filterList = (list, filter) => {
-    if (filter === FILTER.ACTIVE) { 
-      return list.filter(item => !item.completed);
-    } else if (filter === FILTER.COMPLETED) {
-      return list.filter(item => item.completed);
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScrollToEnd);
+  }
+
+  handleScrollToEnd = () => {
+    const { list } = this.props;
+    // console.log("filter", filteredList);
+    const { page } = this.state;
+    const lastItem = page * limit;
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight
+      && lastItem < list.length) {
+        setTimeout(() => {
+          this.setState(prevState => ({
+            page: prevState.page + 1,
+          }));
+        }, 3000);
     }
-    return list;
-  };
-
-  paginateList = (list, currentPage, pageSize) => {
-    const firstItem = (currentPage - 1) * pageSize;
-    const lastItem = currentPage * pageSize;
-    return list.slice(firstItem, lastItem);
-  };
+  }
 
   render() {
-    const totalPages = Math.ceil(this.props.list.length / PAGE_SIZE);
-    const { filter } = this.props;
-    let filteredList = this.filterList(this.props.list, filter);
-    const displayedList = this.paginateList(filteredList, this.state.currentPage, PAGE_SIZE);
-    console.log("currentPage",this.state.currentPage);
-    console.log('list',this.props.list);
-    console.log("displayList", displayedList)
-
+    console.log("default props",this.props.list);
+    const { list } = this.props;
+    const { page } = this.state;
+    const startIndex = (page - 1) * limit;
+    const itemsToShow = list.slice(0, startIndex + limit);
     return (
       <main>
         {this.props.list.length > 0 && (
           <input type="checkbox" className="select-all" onChange={this.props.handleToggleAll}></input>
         )}
         <ul id="todo-list">
-          {displayedList.map((item) =>
+          {itemsToShow.map((item) =>
             <TodoItem
-              list={this.props.list}
               item={item}
               key={item.itemId}
-              handleOnChange={this.props.handleOnChange}
-              handleEdit={this.props.handleEdit}
               handleStatus={this.props.handleStatus}
-              handleDeleteItem={this.props.handleDeleteItem} 
-              selectItem={this.props.selectItem}/>
+              handleDeleteItem={this.props.handleDeleteItem}
+              selectItem={this.props.selectItem} />
           )}
         </ul>
-        <Page 
+        {/* <Page 
               handlePageClick={this.handlePageClick}
-              totalPages={totalPages}
-              currentPage={this.state.currentPage}/>
+            totalPages={totalPages}
+              currentPage={this.state.currentPage}/> */}
+
+
       </main>
     );
   }
 
 
+}
+
+Content.propTypes = { 
+  filteredList : PropTypes.array,
+  list : PropTypes.array,
 }
 
 export default Content;

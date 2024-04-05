@@ -1,42 +1,42 @@
 import React from 'react';
+import {  produce } from 'immer';
+import PropTypes from 'prop-types';
 
 class Header extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      itemId : null
+    }
     this.inputRef = React.createRef();
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.selectedItem !== this.props.selectedItem) {
-      this.inputRef.current.value = this.props.selectedItem ? this.props.selectedItem.content : '';
-    }else {
-      this.inputRef.current.value = '';
-    }
-  }
 
-  // onEdit = (itemId) => {
-  //   if(itemId){
-  //     this.props.updateItem(this.inputRef.current.value);
-  //   }else{
-  //     this.props.addItem(this.inputRef.current.value);
-  //   }
-  // }
+  updateState = (itemId,content) => {
+    this.setState(prevState => 
+        produce(prevState, newState =>  {
+          newState.itemId = itemId;
+        }));
+    this.inputRef.current.value=content;
+   this.inputRef.current.focus();
+  }
 
   handleOnkey = (event) => {
     console.log(this.inputRef.current.value);
     if (event.key === "Enter") {
-      if(this.props.selectedItem){
-        // console.log("true");
-        // console.log("value ne ",this.inputRef.current.value);
+      if(this.state.itemId){
+        // console.log("da ghe ");
         this.props.updateItem(this.inputRef.current.value);
       }else{
         this.props.addItem(this.inputRef.current.value);
       }
       this.inputRef.current.value='';
+      this.setState({ itemId : null});
     }
   };
 
   render() {
+    // console.log("new state: ",this.state.itemId);
     return (
       <header>
         <h1 class="title">todos</h1>
@@ -46,6 +46,13 @@ class Header extends React.Component {
       </header>
     );
   }
+}
+
+Header.propTypes = {
+  inputRef :  PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string
+  ]),
 }
 
 export default Header;

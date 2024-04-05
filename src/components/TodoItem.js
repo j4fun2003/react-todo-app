@@ -1,12 +1,10 @@
 import React from "react";
+import PropTypes from 'prop-types';
 
 class TodoItem extends React.Component {
   constructor(props) {
     super(props);
-    this.inputRef = React.createRef();
   }
-
-
 
   render() {
     const { item, handleStatus, handleDeleteItem , selectItem} = this.props;
@@ -27,6 +25,13 @@ class TodoItem extends React.Component {
       </li>
     )
   }
+}
+
+TodoItem.propTypes = { 
+  item : PropTypes.object.isRequired,
+  handleStatus : PropTypes.func,
+  handleDeleteItem : PropTypes.func,
+  selectItem : PropTypes.func
 }
 
 export default TodoItem;

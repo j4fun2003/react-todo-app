@@ -1,6 +1,7 @@
 import React from 'react';
 import {  produce } from 'immer';
 import PropTypes from 'prop-types';
+import { ThemeContext } from '../assets/javascript/theme-context';
 
 class Header extends React.Component {
   constructor(props) {
@@ -18,6 +19,7 @@ class Header extends React.Component {
           newState.itemId = itemId;
         }));
     this.inputRef.current.value=content;
+
    this.inputRef.current.focus();
   }
 
@@ -25,7 +27,6 @@ class Header extends React.Component {
     console.log(this.inputRef.current.value);
     if (event.key === "Enter") {
       if(this.state.itemId){
-        // console.log("da ghe ");
         this.props.updateItem(this.inputRef.current.value);
       }else{
         this.props.addItem(this.inputRef.current.value);
@@ -38,12 +39,16 @@ class Header extends React.Component {
   render() {
     // console.log("new state: ",this.state.itemId);
     return (
+      <ThemeContext.Consumer>
+        {theme => (
       <header>
         <h1 class="title">todos</h1>
         <div class="input-area">
-          <input type="text" ref={this.inputRef} className="input-text" placeholder="What needs to be done?"  onKeyDown={this.handleOnkey}></input>
+          <input type="text"  style={{ backgroundColor: theme.background,color: theme.foreground}} ref={this.inputRef} className="input-text" placeholder="What needs to be done?"  onKeyDown={this.handleOnkey}></input>
         </div>
       </header>
+        )}
+        </ThemeContext.Consumer>
     );
   }
 }

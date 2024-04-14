@@ -172,3 +172,8 @@ footer.text-center {
   background-color: #b83f45;
   color: white;
 }
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+}

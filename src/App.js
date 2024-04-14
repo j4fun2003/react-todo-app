@@ -3,6 +3,8 @@ import React from 'react';
 import Header from './components/Header1';
 import Content from './components/Content';
 import Footer from './components/Footer1';
+import Toolbar from './components/Toolbar';
+import { ThemeContext, themes } from './assets/javascript/theme-context';
 import { produce } from 'immer';
 import PropTypes from 'prop-types';
 
@@ -17,6 +19,27 @@ let index = 0;
 class App extends React.Component {
   constructor(props) {
     super(props);
+    // this.state = {
+    // list: {
+    //   [FILTER.ALL]: [
+    //     0,
+    //     1,
+    //     2
+    //   ],
+    //   [FILTER.ACTIVE]: [
+    //     0,
+    //     1,
+    //     2
+    //   ],
+    //   [FILTER.COMPLETED]: [],
+    // },
+    // item : {
+    //   0 : { content: '0', completed: false, itemId: index++ },
+    //   1 : { content: '1', completed: false, itemId: index++ },
+    //   2 :{ content: '2', completed: false, itemId: index++ },
+    // },
+    // filter: FILTER.ALL,
+    // }}
     this.state = {
       list: {
         [FILTER.ALL]: [
@@ -60,10 +83,31 @@ class App extends React.Component {
         ],
       },
       filter: FILTER.ALL,
+      theme: themes.light,
     };
     this.headerRef = React.createRef();
-    this.contentRef= React.createRef();
+    this.contentRef = React.createRef();
   }
+
+  changeTheme = () => {
+    this.setState(prevState =>
+      produce(prevState, draftState => {
+        draftState.theme = prevState.theme === themes.dark ? themes.light : themes.dark;
+        document.body.style.setProperty('background-color', draftState.theme.background, 'important');
+      }));
+  };
+
+  // addItemToList = (value) => {
+  //   this.setState((prevState) =>
+  //     produce(prevState, draftState => {
+  //       const newItemId = Object.keys(draftState.item).length;
+  //       const newItem = { content: value, completed: false, itemId: newItemId };
+  //       draftState.list[FILTER.ALL].push(newItemId);
+  //       draftState.list[FILTER.ACTIVE].push(newItemId);
+  //       draftState.item[newItemId] = newItem;
+  //     })
+  //   );
+  // };
 
   addItemToList = (value) => {
     this.setState((prevState) =>
@@ -73,7 +117,6 @@ class App extends React.Component {
         newState.list[FILTER.ACTIVE].push(newItem);
       }));
   };
-
 
   handleStatus = (itemId) => {
     this.setState(prevState =>
@@ -130,7 +173,7 @@ class App extends React.Component {
 
 
   filterList = (filter) => {
-      this.setState({ filter });
+    this.setState({ filter });
   };
 
   handleToggleAll = () => {
@@ -170,8 +213,8 @@ class App extends React.Component {
           item.content = updatedValue;
           if (indexOfActive !== -1) {
             newState.list[FILTER.ACTIVE][indexOfActive].content = updatedValue;
-          } 
-          if(indexOfCompleted !== -1){
+          }
+          if (indexOfCompleted !== -1) {
             newState.list[FILTER.COMPLETED][indexOfCompleted].content = updatedValue;
           }
         }
@@ -181,62 +224,46 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="todo">
-        <Header
-          ref={this.headerRef}
-          addItem={this.addItemToList}
-          updateItem={this.updateItem} />
-        <Content
-          ref={this.contentRef}
-          list={this.state.list[this.state.filter]}
-          handleStatus={this.handleStatus}
-          handleDeleteItem={this.handleDeleteItem}
-          handleToggleAll={this.handleToggleAll}
-          selectItem={this.selectItem}
-        />
-        <Footer
-          filter={this.state.filter}
-          list={this.state.list}
-          filterList={this.filterList}
-          handleDeleteCompleted={this.handleDeleteCompleted}
-        />
-      </div>
+      <ThemeContext.Provider value={this.state.theme}>
+        <div className="todo">
+          <Toolbar changeTheme={this.changeTheme} />
+          <Header
+            ref={this.headerRef}
+            addItem={this.addItemToList}
+            updateItem={this.updateItem} />
+          <Content
+            // ref={this.contentRef}
+            list={this.state.list[this.state.filter]}
+            handleStatus={this.handleStatus}
+            handleDeleteItem={this.handleDeleteItem}
+            handleToggleAll={this.handleToggleAll}
+            selectItem={this.selectItem}
+          />
+          <Footer
+            filter={this.state.filter}
+            list={this.state.list}
+            filterList={this.filterList}
+            handleDeleteCompleted={this.handleDeleteCompleted}
+          />
+
+        </div>
+      </ThemeContext.Provider>
     );
   }
 }
 
-App.propTypes = { 
-  list : PropTypes.array,
-  filter : PropTypes.string,
-  addItemToList : PropTypes.func,
-  updateItem : PropTypes.func,
-  handleStatus : PropTypes.func,
-  handleDeleteItem : PropTypes.func,
-  handleToggleAll : PropTypes.func,
-  selectItem : PropTypes.func,
-  handleDeleteCompleted : PropTypes.func,
-  filterList : PropTypes.func
+App.propTypes = {
+  list: PropTypes.array,
+  filter: PropTypes.string,
+  addItemToList: PropTypes.func,
+  updateItem: PropTypes.func,
+  handleStatus: PropTypes.func,
+  handleDeleteItem: PropTypes.func,
+  handleToggleAll: PropTypes.func,
+  selectItem: PropTypes.func,
+  handleDeleteCompleted: PropTypes.func,
+  filterList: PropTypes.func
 }
 
-// Content.defaultProps = { 
-//   list : [
-//     { content: '0', completed: false, itemId: index++ },
-//     { content: '1', completed: false, itemId: index++ },
-//     { content: '2', completed: false, itemId: index++ },
-//     { content: '3', completed: false, itemId: index++ },
-//     { content: '4', completed: false, itemId: index++ },
-//     { content: '5', completed: false, itemId: index++ },
-//     { content: '6', completed: false, itemId: index++ },
-//     { content: '7', completed: false, itemId: index++ },
-//     { content: '8', completed: false, itemId: index++ },
-//     { content: '9', completed: false, itemId: index++ },
-//     { content: '10', completed: false, itemId: index++ },
-//     { content: '11', completed: false, itemId: index++ },
-//     { content: '12', completed: false, itemId: index++ },
-//     { content: '13', completed: false, itemId: index++ },
-//     { content: '14', completed: false, itemId: index++ },
-//     { content: '15', completed: false, itemId: index++ }
-//   ]
-// }
 
 export default App;

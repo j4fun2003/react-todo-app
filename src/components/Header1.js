@@ -37,18 +37,14 @@ class Header extends React.Component {
   };
 
   render() {
-    // console.log("new state: ",this.state.itemId);
+    const {theme} = this.context;
     return (
-      <ThemeContext.Consumer>
-        {theme => (
       <header>
         <h1 class="title">todos</h1>
         <div class="input-area">
           <input type="text"  style={{ backgroundColor: theme.background,color: theme.foreground}} ref={this.inputRef} className="input-text" placeholder="What needs to be done?"  onKeyDown={this.handleOnkey}></input>
         </div>
       </header>
-        )}
-        </ThemeContext.Consumer>
     );
   }
 }
@@ -59,5 +55,7 @@ Header.propTypes = {
     PropTypes.string
   ]),
 }
+
+Header.contextType = ThemeContext;
 
 export default Header;

@@ -1,12 +1,12 @@
 
-import React from 'react';
+import React, { Suspense, lazy , startTransition} from "react";
 import Header from './components/Header1';
 import Content from './components/Content';
 import Footer from './components/Footer1';
 import Toolbar from './components/Toolbar';
-import { ThemeContext, themes } from './assets/javascript/theme-context';
 import { produce } from 'immer';
 import PropTypes from 'prop-types';
+const ModalLoading = lazy(() => import('./components/Loading'));
 
 export const FILTER = {
   ALL: 'ALL',
@@ -19,27 +19,6 @@ let index = 0;
 class App extends React.Component {
   constructor(props) {
     super(props);
-    // this.state = {
-    // list: {
-    //   [FILTER.ALL]: [
-    //     0,
-    //     1,
-    //     2
-    //   ],
-    //   [FILTER.ACTIVE]: [
-    //     0,
-    //     1,
-    //     2
-    //   ],
-    //   [FILTER.COMPLETED]: [],
-    // },
-    // item : {
-    //   0 : { content: '0', completed: false, itemId: index++ },
-    //   1 : { content: '1', completed: false, itemId: index++ },
-    //   2 :{ content: '2', completed: false, itemId: index++ },
-    // },
-    // filter: FILTER.ALL,
-    // }}
     this.state = {
       list: {
         [FILTER.ALL]: [
@@ -83,40 +62,28 @@ class App extends React.Component {
         ],
       },
       filter: FILTER.ALL,
-      theme: themes.light,
+      loading: false
     };
     this.headerRef = React.createRef();
     this.contentRef = React.createRef();
   }
 
-  changeTheme = () => {
-    this.setState(prevState =>
-      produce(prevState, draftState => {
-        draftState.theme = prevState.theme === themes.dark ? themes.light : themes.dark;
-        document.body.style.setProperty('background-color', draftState.theme.background, 'important');
-      }));
-  };
-
-  // addItemToList = (value) => {
-  //   this.setState((prevState) =>
-  //     produce(prevState, draftState => {
-  //       const newItemId = Object.keys(draftState.item).length;
-  //       const newItem = { content: value, completed: false, itemId: newItemId };
-  //       draftState.list[FILTER.ALL].push(newItemId);
-  //       draftState.list[FILTER.ACTIVE].push(newItemId);
-  //       draftState.item[newItemId] = newItem;
-  //     })
-  //   );
-  // };
-
   addItemToList = (value) => {
-    this.setState((prevState) =>
-      produce(prevState, newState => {
-        const newItem = { content: value, completed: false, itemId: index++ };
-        newState.list[FILTER.ALL].push(newItem);
-        newState.list[FILTER.ACTIVE].push(newItem);
-      }));
+    this.updateLoading(true);
+    setTimeout(() => {
+      this.setState((prevState) =>
+        produce(prevState, (newState) => {
+          const newItem = { content: value, completed: false, itemId: index++ };
+          newState.list[FILTER.ALL].push(newItem);
+          newState.list[FILTER.ACTIVE].push(newItem);
+        }), () => {
+          this.updateLoading(false);
+        }
+      );
+    }, 500);
   };
+  
+  
 
   handleStatus = (itemId) => {
     this.setState(prevState =>
@@ -222,32 +189,40 @@ class App extends React.Component {
     );
   }
 
+  updateLoading = (value) => {
+    this.setState({ loading: value });
+  }
+
   render() {
+    const { loading, list, filter } = this.state;
     return (
-      <ThemeContext.Provider value={this.state.theme}>
-        <div className="todo">
+
+      <div className="todo">
+        {/* <Suspense fallback={<ModalLoading></ModalLoading>}> */}
           <Toolbar changeTheme={this.changeTheme} />
           <Header
             ref={this.headerRef}
             addItem={this.addItemToList}
             updateItem={this.updateItem} />
           <Content
-            // ref={this.contentRef}
-            list={this.state.list[this.state.filter]}
+            loading={loading}
+            list={list[filter]}
             handleStatus={this.handleStatus}
             handleDeleteItem={this.handleDeleteItem}
             handleToggleAll={this.handleToggleAll}
             selectItem={this.selectItem}
+            updateLoading={this.updateLoading}
           />
           <Footer
-            filter={this.state.filter}
-            list={this.state.list}
+            filter={filter}
+            list={list}
             filterList={this.filterList}
             handleDeleteCompleted={this.handleDeleteCompleted}
           />
+          {loading && <ModalLoading />}
+        {/* </Suspense> */}
 
-        </div>
-      </ThemeContext.Provider>
+      </div>
     );
   }
 }

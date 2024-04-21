@@ -13,10 +13,9 @@ class Footer extends React.Component {
   }
 
   render() {
+    const {theme} = this.context;
     const {filter} = this.props;
     return (
-      <ThemeContext.Consumer>
-        {theme => (
       <footer id="nav" className="row"  style={{ backgroundColor: theme.background,color: theme.foreground}} >
         <span className="todo-count col">{this.props.list[filter].length} item left</span>
         <ul className="filters col-5">
@@ -32,8 +31,6 @@ class Footer extends React.Component {
         </ul>
         <button className="clear-completed col" onClick={() => this.props.handleDeleteCompleted()} style={{ backgroundColor: theme.background,color: theme.foreground}}>Clear completed</button>
       </footer>
-           )}
-      </ThemeContext.Consumer>
     );
   }
 }
@@ -43,4 +40,5 @@ Footer.propTypes = {
   list : PropTypes.array.isRequired
 }
 
+Footer.contextType = ThemeContext;
 export default Footer;

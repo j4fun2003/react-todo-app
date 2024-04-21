@@ -8,10 +8,9 @@ class TodoItem extends React.Component {
   }
 
   render() {
+    const {theme} = this.context;
     const { item, handleStatus, handleDeleteItem , selectItem} = this.props;
     return (
-      <ThemeContext.Consumer>
-        {theme => (
       <li key={item.itemId} className={item.completed ? 'completed todo-item' : 'todo-item'}  style={{ backgroundColor: theme.background,color: theme.foreground}}>
         <div className="view row">
             <>
@@ -26,8 +25,6 @@ class TodoItem extends React.Component {
             </>
         </div>
       </li>
-        )}
-        </ThemeContext.Consumer>
     )
   }
 }
@@ -38,5 +35,7 @@ TodoItem.propTypes = {
   handleDeleteItem : PropTypes.func,
   selectItem : PropTypes.func
 }
+
+TodoItem.contextType = ThemeContext;
 
 export default TodoItem;

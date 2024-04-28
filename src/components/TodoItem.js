@@ -1,15 +1,9 @@
-import React from "react";
+import React , {useContext} from "react";
 import PropTypes from 'prop-types';
 import { ThemeContext } from "../assets/javascript/theme-context";
 
-class TodoItem extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    const {theme} = this.context;
-    const { item, handleStatus, handleDeleteItem , selectItem} = this.props;
+const TodoItem = ({item, handleStatus, handleDeleteItem , selectItem}) => {
+    const {theme} = useContext(ThemeContext);
     return (
       <li key={item.itemId} className={item.completed ? 'completed todo-item' : 'todo-item'}  style={{ backgroundColor: theme.background,color: theme.foreground}}>
         <div className="view row">
@@ -27,7 +21,7 @@ class TodoItem extends React.Component {
       </li>
     )
   }
-}
+
 
 TodoItem.propTypes = { 
   item : PropTypes.object.isRequired,
@@ -35,7 +29,5 @@ TodoItem.propTypes = {
   handleDeleteItem : PropTypes.func,
   selectItem : PropTypes.func
 }
-
-TodoItem.contextType = ThemeContext;
 
 export default TodoItem;

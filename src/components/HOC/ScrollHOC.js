@@ -1,60 +1,45 @@
-import React from "react";
-
+import React, { useEffect, useRef, useState } from "react";
 
 const ScrollFunction = (WrappedComponent) => {
     const limit = 5;
-    class ScrollHOC extends React.Component{
-        constructor(props){
-            super(props);
-            this.state = {
-                page: 1,
-            }
-            this.refOfComponent = React.createRef();
-        }
+    const ScrollHOC = (props) => {
+        const { list, updateLoading } = props;
+        const [page, setPage] = useState(1);
+        const refOfComponent = useRef(null);
 
-        componentDidMount() {
-            this.refOfComponent.current.addEventListener('scroll', this.handleScrollToEnd);
-          }
-        
-          componentWillUnmount() {
-            this.refOfComponent.current.removeEventListener('scroll', this.handleScrollToEnd);
-          }
-        
-          handleScrollToEnd = () => {
-            const { list , updateLoading} = this.props;
-            const { page } = this.state;
-            const lastItem = page * limit;
-            const { scrollTop, scrollHeight, clientHeight } = this.refOfComponent.current;
-            if (
-              scrollTop + clientHeight >= scrollHeight &&
-              lastItem < list.length
-            ) {
-                updateLoading(true);
-                setTimeout(() => {
-                this.setState(prevState => ({
-                  page: prevState.page + 1,
-                }),  () => {
-                    updateLoading(false);
-                  });  
-              }, 1000);
-            }
-          }  
-    
-        render(){
-            return (
-                <div ref={this.refOfComponent} style={{ overflowY: 'scroll', height: '200px' }}>
-                        <WrappedComponent 
-                            {...this.props}
-                            limit={limit}
-                            page={this.state.page}
-                            refOfComponent={this.refOfComponent} 
-                           >
-                        </WrappedComponent>
-                </div>
-            );
-        }
-    }
+        useEffect(() => {
+            const handleScrollToEnd = () => {
+                const lastItem = page * limit;
+                const { scrollTop, scrollHeight, clientHeight } = refOfComponent.current;
+                if (scrollTop + clientHeight >= scrollHeight && lastItem < list.length) {
+                    updateLoading(true);
+                    setTimeout(() => {
+                        setPage(prevPage => prevPage + 1);
+                        updateLoading(false);
+                    }, 1000);
+                }
+            };
+
+            refOfComponent.current.addEventListener('scroll', handleScrollToEnd);
+
+            return () => {
+                refOfComponent.current.removeEventListener('scroll', handleScrollToEnd);
+            };
+        }, [list, page, updateLoading]);
+
+        return (
+            <div ref={refOfComponent} style={{ overflowY: 'scroll', height: '200px' }}>
+                <WrappedComponent 
+                    {...props}
+                    limit={limit}
+                    page={page}
+                    refOfComponent={refOfComponent} 
+                />
+            </div>
+        );
+    };
+
     return ScrollHOC;
-}
+};
 
 export default ScrollFunction;

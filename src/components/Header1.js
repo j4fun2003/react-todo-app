@@ -1,61 +1,56 @@
-import React from 'react';
-import {  produce } from 'immer';
+import React, { useState, useRef, useContext, useImperativeHandle, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { ThemeContext } from '../assets/javascript/theme-context';
 
-class Header extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      itemId : null
+const Header = forwardRef(({ addItem, updateItem }, ref) => {
+  const { theme } = useContext(ThemeContext);
+  const [itemId, setItemId] = useState(null);
+  const inputRef = useRef();
+
+  useImperativeHandle(ref, () => ({
+    updateState(itemId, content) {
+      setItemId(itemId);
+      console.log(itemId);
+      inputRef.current.value = content;
+      inputRef.current.focus();
+    },
+    getItemId() {
+      return itemId;
     }
-    this.inputRef = React.createRef();
-  }
+  }));
 
-
-  updateState = (itemId,content) => {
-    this.setState(prevState => 
-        produce(prevState, newState =>  {
-          newState.itemId = itemId;
-        }));
-    this.inputRef.current.value=content;
-
-   this.inputRef.current.focus();
-  }
-
-  handleOnkey = (event) => {
-    console.log(this.inputRef.current.value);
-    if (event.key === "Enter") {
-      if(this.state.itemId){
-        this.props.updateItem(this.inputRef.current.value);
-      }else{
-        this.props.addItem(this.inputRef.current.value);
+  const handleOnkey = (event) => {
+    if (event.key === 'Enter') {
+      if (itemId) {
+        updateItem(inputRef.current.value);
+      } else {
+        addItem(inputRef.current.value);
       }
-      this.inputRef.current.value='';
-      this.setState({ itemId : null});
+      inputRef.current.value = '';
+      setItemId(null);
     }
   };
 
-  render() {
-    const {theme} = this.context;
-    return (
-      <header>
-        <h1 class="title">todos</h1>
-        <div class="input-area">
-          <input type="text"  style={{ backgroundColor: theme.background,color: theme.foreground}} ref={this.inputRef} className="input-text" placeholder="What needs to be done?"  onKeyDown={this.handleOnkey}></input>
-        </div>
-      </header>
-    );
-  }
-}
+  return (
+    <header>
+      <h1 className="title">todos</h1>
+      <div className="input-area">
+        <input
+          type="text"
+          style={{ backgroundColor: theme.background, color: theme.foreground }}
+          ref={inputRef}
+          className="input-text"
+          placeholder="What needs to be done?"
+          onKeyDown={handleOnkey}
+        />
+      </div>
+    </header>
+  );
+});
 
 Header.propTypes = {
-  inputRef :  PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string
-  ]),
-}
-
-Header.contextType = ThemeContext;
+  addItem: PropTypes.func.isRequired,
+  updateItem: PropTypes.func.isRequired
+};
 
 export default Header;

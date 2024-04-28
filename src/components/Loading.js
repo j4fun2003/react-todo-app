@@ -1,34 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import '../assets/css/loading.css';
 
-class ModalLoading extends React.Component {
-  constructor(props) {
-    super(props);
-    this.el = document.createElement('div');
-  }
+const ModalLoading = () => {
+  const el = document.createElement('div');
 
-  componentDidMount() {
-    document.body.appendChild(this.el);
-  }
+  useEffect(() => {
+    document.body.appendChild(el);
+    return () => {
+      document.body.removeChild(el);
+    };
+  }, [el]);
 
-  componentWillUnmount() {
-    document.body.removeChild(this.el);
-  }
-
-  render() {
-    return ReactDOM.createPortal(
-      <div className="modal-loading">
-        <div className="modal-loading-content">
-          <div className="spinner-border" role="status">
-            <span className="sr-only">Loading...</span>
-          </div>
-          <p>Loading...</p>
+  return ReactDOM.createPortal(
+    <div className="modal-loading">
+      <div className="modal-loading-content">
+        <div className="spinner-border" role="status">
+          <span className="sr-only">Loading...</span>
         </div>
-      </div>,
-      this.el 
-    );
-  }
-}
+        <p>Loading...</p>
+      </div>
+    </div>,
+    el
+  );
+};
 
 export default ModalLoading;

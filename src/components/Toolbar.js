@@ -5,7 +5,7 @@ export default class Toolbar extends React.Component{
 
     render(){
         return (
-           <nav class="toolbar">
+           <nav className="toolbar">
              <ThemeButton/>
            </nav>
         );

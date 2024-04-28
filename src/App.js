@@ -1,11 +1,10 @@
-
-import React, { Suspense, lazy , startTransition} from "react";
+import React, { useState, useRef, Suspense , lazy } from 'react';
+import {  produce } from 'immer';
+import PropTypes from 'prop-types';
 import Header from './components/Header1';
 import Content from './components/Content';
 import Footer from './components/Footer1';
 import Toolbar from './components/Toolbar';
-import { produce } from 'immer';
-import PropTypes from 'prop-types';
 const ModalLoading = lazy(() => import('./components/Loading'));
 
 export const FILTER = {
@@ -16,219 +15,188 @@ export const FILTER = {
 
 let index = 0;
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      list: {
-        [FILTER.ALL]: [
-          { content: '0', completed: false, itemId: index++ },
-          { content: '1', completed: false, itemId: index++ },
-          { content: '2', completed: false, itemId: index++ },
-          { content: '3', completed: false, itemId: index++ },
-          { content: '4', completed: false, itemId: index++ },
-          { content: '5', completed: false, itemId: index++ },
-          { content: '6', completed: false, itemId: index++ },
-          { content: '7', completed: false, itemId: index++ },
-          { content: '8', completed: false, itemId: index++ },
-          { content: '9', completed: false, itemId: index++ },
-          { content: '10', completed: false, itemId: index++ },
-          { content: '11', completed: false, itemId: index++ },
-          { content: '12', completed: false, itemId: index++ },
-          { content: '13', completed: false, itemId: index++ },
-          { content: '14', completed: false, itemId: index++ },
-          { content: '15', completed: false, itemId: index++ }
-        ],
-        [FILTER.ACTIVE]: [
-          { content: '0', completed: false, itemId: index++ },
-          { content: '1', completed: false, itemId: index++ },
-          { content: '2', completed: false, itemId: index++ },
-          { content: '3', completed: false, itemId: index++ },
-          { content: '4', completed: false, itemId: index++ },
-          { content: '5', completed: false, itemId: index++ },
-          { content: '6', completed: false, itemId: index++ },
-          { content: '7', completed: false, itemId: index++ },
-          { content: '8', completed: false, itemId: index++ },
-          { content: '9', completed: false, itemId: index++ },
-          { content: '10', completed: false, itemId: index++ },
-          { content: '11', completed: false, itemId: index++ },
-          { content: '12', completed: false, itemId: index++ },
-          { content: '13', completed: false, itemId: index++ },
-          { content: '14', completed: false, itemId: index++ },
-          { content: '15', completed: false, itemId: index++ }
-        ],
-        [FILTER.COMPLETED]: [
+const App = () => {
+  const [list, setList] = useState({
+    [FILTER.ALL]: [
+      { content: '0', completed: false, itemId: index++ },
+      { content: '1', completed: false, itemId: index++ },
+      { content: '2', completed: false, itemId: index++ },
+      { content: '3', completed: false, itemId: index++ },
+      { content: '4', completed: false, itemId: index++ },
+      { content: '5', completed: false, itemId: index++ },
+      { content: '6', completed: false, itemId: index++ },
+      { content: '7', completed: false, itemId: index++ },
+      { content: '8', completed: false, itemId: index++ },
+      { content: '9', completed: false, itemId: index++ },
+      { content: '10', completed: false, itemId: index++ },
+      { content: '11', completed: false, itemId: index++ },
+      { content: '12', completed: false, itemId: index++ },
+      { content: '13', completed: false, itemId: index++ },
+      { content: '14', completed: false, itemId: index++ },
+      { content: '15', completed: false, itemId: index++ }
+    ],
+    [FILTER.ACTIVE]: [
+      { content: '0', completed: false, itemId: index++ },
+      { content: '1', completed: false, itemId: index++ },
+      { content: '2', completed: false, itemId: index++ },
+      { content: '3', completed: false, itemId: index++ },
+      { content: '4', completed: false, itemId: index++ },
+      { content: '5', completed: false, itemId: index++ },
+      { content: '6', completed: false, itemId: index++ },
+      { content: '7', completed: false, itemId: index++ },
+      { content: '8', completed: false, itemId: index++ },
+      { content: '9', completed: false, itemId: index++ },
+      { content: '10', completed: false, itemId: index++ },
+      { content: '11', completed: false, itemId: index++ },
+      { content: '12', completed: false, itemId: index++ },
+      { content: '13', completed: false, itemId: index++ },
+      { content: '14', completed: false, itemId: index++ },
+      { content: '15', completed: false, itemId: index++ }
+    ],
+    [FILTER.COMPLETED]: []
+  });
+  const [filter, setFilter] = useState(FILTER.ALL);
+  const [loading, setLoading] = useState(false);
+  const headerRef = useRef();
 
-        ],
-      },
-      filter: FILTER.ALL,
-      loading: false
-    };
-    this.headerRef = React.createRef();
-    this.contentRef = React.createRef();
-  }
-
-  addItemToList = (value) => {
-    this.updateLoading(true);
+  const addItemToList = (value) => {
+    setLoading(true);
     setTimeout(() => {
-      this.setState((prevState) =>
+      setList((prevState) =>
         produce(prevState, (newState) => {
-          const newItem = { content: value, completed: false, itemId: index++ };
-          newState.list[FILTER.ALL].push(newItem);
-          newState.list[FILTER.ACTIVE].push(newItem);
-        }), () => {
-          this.updateLoading(false);
-        }
+          const newItem = { content: value, completed: false, itemId: prevState[FILTER.ALL].length };
+          newState[FILTER.ALL].push(newItem);
+          newState[FILTER.ACTIVE].push(newItem);
+        })
       );
+      setLoading(false);
     }, 500);
   };
-  
-  
 
-  handleStatus = (itemId) => {
-    this.setState(prevState =>
-      produce(prevState, newState => {
-        console.log('item id', itemId);
-        const itemIndex = newState.list[FILTER.ALL].findIndex(item => item.itemId === itemId);
-        const itemIndexActive = newState.list[FILTER.ACTIVE].findIndex(item => item.itemId === itemId);
-        const itemCompletedActive = newState.list[FILTER.COMPLETED].findIndex(item => item.itemId === itemId);
-        const item = newState.list[FILTER.ALL][itemIndex];
+
+  const handleStatus = (itemId) => {
+    setList((prevState) =>
+      produce(prevState, (newState) => {
+        const itemIndex = newState[FILTER.ALL].findIndex(item => item.itemId === itemId);
+        const item = newState[FILTER.ALL][itemIndex];
         item.completed = !item.completed;
         if (item.completed) {
-          newState.list[FILTER.COMPLETED].push(item);
-          if (itemIndexActive !== -1) {
-            newState.list[FILTER.ACTIVE].splice(itemIndexActive, 1);
-          }
+          newState[FILTER.COMPLETED].push(item);
+          newState[FILTER.ACTIVE] = newState[FILTER.ACTIVE].filter(item => item.itemId !== itemId);
         } else {
-          newState.list[FILTER.ACTIVE].push(item);
-          if (itemCompletedActive !== -1) {
-            newState.list[FILTER.COMPLETED].splice(itemCompletedActive, 1);
-          }
+          newState[FILTER.ACTIVE].push(item);
+          newState[FILTER.COMPLETED] = newState[FILTER.COMPLETED].filter(item => item.itemId !== itemId);
         }
       })
     );
   };
 
-  handleDeleteItem = (itemId) => {
-    this.setState(prevState =>
-      produce(prevState, newState => {
-        const itemIndexAll = newState.list[FILTER.ALL].findIndex(item => item.itemId === itemId);
-        if (itemIndexAll !== -1) {
-          newState.list[FILTER.ALL].splice(itemIndexAll, 1);
-          const itemIndexActive = newState.list[FILTER.ACTIVE].findIndex(item => item.itemId === itemId);
-          const itemIndexCompleted = newState.list[FILTER.COMPLETED].findIndex(item => item.itemId === itemId);
-          if (itemIndexActive !== -1) {
-            newState.list[FILTER.ACTIVE].splice(itemIndexActive, 1);
-          }
-          if (itemIndexCompleted !== -1) {
-            newState.list[FILTER.COMPLETED].splice(itemIndexCompleted, 1);
-          }
-        }
+  const handleDeleteItem = (itemId) => {
+    setList((prevState) =>
+      produce(prevState, (newState) => {
+        const filteredList = prevState[FILTER.ALL].filter(item => item.itemId !== itemId);
+        newState[FILTER.ALL] = filteredList;
+        newState[FILTER.ACTIVE] = newState[FILTER.ACTIVE].filter(item => item.itemId !== itemId);
+        newState[FILTER.COMPLETED] = newState[FILTER.COMPLETED].filter(item => item.itemId !== itemId);
       })
     );
   };
 
 
-  handleDeleteCompleted = () => {
-    this.setState(prevState =>
-      produce(prevState, newState => {
-        newState.list[FILTER.ALL] = newState.list[FILTER.ALL].filter(item => !item.completed);
-        newState.list[FILTER.COMPLETED] = [];
+  const handleDeleteCompleted = () => {
+    setList((prevState) =>
+      produce(prevState, (newState) => {
+        newState[FILTER.ALL] = newState[FILTER.ALL].filter(item => !item.completed);
+        newState[FILTER.COMPLETED] = [];
       })
     );
   };
 
-
-  filterList = (filter) => {
-    this.setState({ filter });
-  };
-
-  handleToggleAll = () => {
-    this.setState(prevState =>
-      produce(prevState, newState => {
-        const checkCompleted = newState.list[FILTER.ALL].every(item => item.completed);
+  const handleToggleAll = () => {
+    setList((prevState) =>
+      produce(prevState, (newState) => {
+        const checkCompleted = newState[FILTER.ALL].every(item => item.completed);
+        newState[FILTER.ALL].forEach(item => {
+          item.completed = !checkCompleted;
+        });
         if (checkCompleted) {
-          newState.list[FILTER.ALL].forEach(item => {
-            item.completed = false;
-          });
-          newState.list[FILTER.COMPLETED] = [];
-          newState.list[FILTER.ACTIVE] = newState.list[FILTER.ALL];
+          newState[FILTER.COMPLETED] = [];
+          newState[FILTER.ACTIVE] = newState[FILTER.ALL];
         } else {
-          newState.list[FILTER.ALL].forEach(item => {
-            item.completed = true;
-          });
-          newState.list[FILTER.COMPLETED] = newState.list[FILTER.ALL];
-          newState.list[FILTER.ACTIVE] = [];
+          newState[FILTER.COMPLETED] = newState[FILTER.ALL];
+          newState[FILTER.ACTIVE] = [];
         }
       })
     );
   };
 
-  selectItem = (itemId) => {
-    const item = this.state.list[FILTER.ALL].find(item => item.itemId === itemId);
+  const selectItem = (itemId) => {
+    const item = list[FILTER.ALL].find(item => item.itemId === itemId);
     const content = item.content;
-    this.headerRef.current.updateState(itemId, content);
-  }
+    headerRef.current.updateState(itemId, content);
+  };
 
-  updateItem = (updatedValue) => {
-    this.setState(prevState =>
-      produce(prevState, newState => {
-        const item = newState.list[FILTER.ALL].find(item => item.itemId === this.headerRef.current.state.itemId);
-        const indexOfActive = newState.list[FILTER.ACTIVE].findIndex(item => item.itemId === this.headerRef.current.state.itemId);
-        const indexOfCompleted = newState.list[FILTER.COMPLETED].findIndex(item => item.itemId === this.headerRef.current.state.itemId);
+  const updateItem = (updatedValue) => {
+    setList((prevState) =>
+      produce(prevState, (newState) => {
+        const itemIndex = newState[FILTER.ALL].findIndex(item => item.itemId === headerRef.current.getItemId());
+        const item = newState[FILTER.ALL][itemIndex];
         if (item) {
           item.content = updatedValue;
+          const indexOfActive = newState[FILTER.ACTIVE].findIndex(item => item.itemId === headerRef.current.getItemId());
+          const indexOfCompleted = newState[FILTER.COMPLETED].findIndex(item => item.itemId === headerRef.current.getItemId());
           if (indexOfActive !== -1) {
-            newState.list[FILTER.ACTIVE][indexOfActive].content = updatedValue;
+            newState[FILTER.ACTIVE][indexOfActive].content = updatedValue;
           }
-          if (indexOfCompleted !== -1) {
-            newState.list[FILTER.COMPLETED][indexOfCompleted].content = updatedValue;
+          if (indexOfCompleted
+            !== -1) {
+            newState[FILTER.COMPLETED][indexOfCompleted].content = updatedValue;
           }
         }
       })
     );
+  };
+
+  const updateLoading = (value) => {
+    setLoading(value);
   }
 
-  updateLoading = (value) => {
-    this.setState({ loading: value });
-  }
+  const filterList = (selectedFilter) => {
+    setFilter(selectedFilter);
+  };
 
-  render() {
-    const { loading, list, filter } = this.state;
-    return (
+  return (
+    <div className="todo">
+      <Suspense fallback={loading}>
+        <Toolbar/>
+        <Header
+          ref={headerRef}
+          addItem={addItemToList}
 
-      <div className="todo">
-        {/* <Suspense fallback={<ModalLoading></ModalLoading>}> */}
-          <Toolbar changeTheme={this.changeTheme} />
-          <Header
-            ref={this.headerRef}
-            addItem={this.addItemToList}
-            updateItem={this.updateItem} />
-          <Content
-            loading={loading}
-            list={list[filter]}
-            handleStatus={this.handleStatus}
-            handleDeleteItem={this.handleDeleteItem}
-            handleToggleAll={this.handleToggleAll}
-            selectItem={this.selectItem}
-            updateLoading={this.updateLoading}
-          />
-          <Footer
-            filter={filter}
-            list={list}
-            filterList={this.filterList}
-            handleDeleteCompleted={this.handleDeleteCompleted}
-          />
-          {loading && <ModalLoading />}
-        {/* </Suspense> */}
-
-      </div>
-    );
-  }
-}
+          updateItem={updateItem} />
+        <Content
+          loading={loading}
+          list={list[filter]}
+          handleStatus={handleStatus}
+          handleDeleteItem={handleDeleteItem}
+          handleToggleAll={handleToggleAll}
+          selectItem={selectItem}
+          updateLoading={updateLoading}
+        />
+        <Footer
+          filter={filter}
+          list={list}
+          filterList={filterList}
+          handleDeleteCompleted={handleDeleteCompleted}
+        />
+        {loading && <ModalLoading />}
+      </Suspense>
+    </div>
+  );
+};
 
 App.propTypes = {
-  list: PropTypes.array,
+  list: PropTypes.object,
   filter: PropTypes.string,
   addItemToList: PropTypes.func,
   updateItem: PropTypes.func,
@@ -238,7 +206,6 @@ App.propTypes = {
   selectItem: PropTypes.func,
   handleDeleteCompleted: PropTypes.func,
   filterList: PropTypes.func
-}
-
+};
 
 export default App;

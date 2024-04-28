@@ -1,5 +1,5 @@
-import React from "react";
-import { produce } from 'immer';
+import React, { useState , useEffect } from 'react';
+
 export const themes = {
   light: {
     foreground: '#000000',
@@ -11,39 +11,27 @@ export const themes = {
   },
 };
 
-export const ThemeContext = React.createContext(
-  {
-    themes: themes.light,
-    changeTheme: () => null
-  }
-);
+export const ThemeContext = React.createContext({
+  theme: themes.light,
+  changeTheme: () => null,
+});
 
-export default class ThemeProvider extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      theme: themes.light
-    }
-  }
+const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState(themes.light);
 
-  changeTheme = () => {
-    this.setState(
-      (prevState) => ({
-        theme: prevState.theme == themes.dark ? themes.light : themes.dark,
-      }),
-      () => {
-        document.body.style.setProperty('background-color', this.state.theme.background, 'important');
-      }
-    )
+  const changeTheme = () => {
+    setTheme(prevTheme => prevTheme === themes.dark ? themes.light : themes.dark);
   };
 
-  render() {
-    const { children } = this.props;
-    const { theme } = this.state;
-    return (
-      <ThemeContext.Provider value={{ theme, changeTheme: this.changeTheme }}>
-        {children}
-      </ThemeContext.Provider>
-    );
-  }
-}
+  useEffect(() => {
+    document.body.style.setProperty('background-color', theme.background, 'important');
+  }, [theme]);
+
+  return (
+    <ThemeContext.Provider value={{ theme, changeTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+export default ThemeProvider;

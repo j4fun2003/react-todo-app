@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { ThemeContext } from '../assets/javascript/theme-context';
-import { FILTER } from '../App';
+import { FILTER } from './redux/actions';
 
 const Footer = ({ filter, list, filterList, handleDeleteCompleted }) => {
   const { theme } = useContext(ThemeContext);

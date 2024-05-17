@@ -1,0 +1,16 @@
+Nguyên tắc làm việc với state: 1 state PHẢI trả về 1 mảng mới và 1 object mới
+
+Components: re-render 3 yeu to :
+1 state prop thay doi, va components cha render
+
+pure-components: re-render khi props hoac state thay doi 
+
+
+ko them properties bua bai vd: editingId
+lưu ý khi tạo ra 1 biến 
+
+(keyword) uncontroller controller component : doc them
+(keyword) PropTypes, defaultProps trong 1 component
+
+refactor lai : phan trang, edit update len input
+de lam duoc xem :(keyword) Refs and the DOM https://legacy.reactjs.org/docs/refs-and-the-dom.html

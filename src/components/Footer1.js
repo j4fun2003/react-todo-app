@@ -1,14 +1,26 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { ThemeContext } from '../assets/javascript/theme-context';
-import { FILTER } from './redux/actions';
+import { useDispatch} from 'react-redux';
+import {
+  deleteCompleted,
+  setFilter,
+  FILTER
+} from '../components/redux/actions';
 
-const Footer = ({ filter, list, filterList, handleDeleteCompleted }) => {
+const Footer = ({ filter, list }) => {
   const { theme } = useContext(ThemeContext);
+  const dispatch = useDispatch();
 
   const handleOnClick = (event) => {
-    filterList(event.target.name);
+    dispatch(setFilter(event.target.name));
   };
+
+  const handleDeleteCompleted = () => {
+      dispatch(deleteCompleted());
+    };
+
+
 
   return (
     <footer id="nav" className="row" style={{ backgroundColor: theme.background, color: theme.foreground }}>

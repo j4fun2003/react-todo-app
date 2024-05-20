@@ -1,16 +1,27 @@
 import React, { useContext } from 'react';
+import { useSelector , useDispatch} from 'react-redux';
 import TodoItem from './TodoItem';
 import PropTypes from 'prop-types';
 import { ThemeContext } from '../assets/javascript/theme-context';
 import useScroll from './hook/useScroll';
+import {
+  toggleAll,
+} from '../components/redux/actions';
 
-const Content = ({ list, handleToggleAll, handleStatus, handleDeleteItem, selectItem, updateLoading }) => {
+const Content = ({ list }) => {
+  // const { list } = useSelector(state => state);
+  const dispatch = useDispatch();
   const { theme } = useContext(ThemeContext);
-  const { refOfElement, page, limit } = useScroll(list, updateLoading);
+  const { refOfElement, page, limit } = useScroll(list);
   const startIndex = (page - 1) * limit;
   console.log("start", startIndex);
   const itemsToShow = list.slice(0, startIndex + limit);
   console.log("item", itemsToShow);
+
+  const handleToggleAll = () => {
+    dispatch(toggleAll());
+  }
+
 
   return (
     <main style={{ backgroundColor: theme.background, color: theme.foreground }}>
@@ -24,9 +35,6 @@ const Content = ({ list, handleToggleAll, handleStatus, handleDeleteItem, select
               theme={theme}
               item={item}
               key={item.itemId}
-              handleStatus={handleStatus}
-              handleDeleteItem={handleDeleteItem}
-              selectItem={selectItem}
             />
           )}
         </ul>

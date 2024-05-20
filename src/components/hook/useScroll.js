@@ -1,7 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
+import {
+  setLoading
+} from '../redux/actions';
+import { useDispatch } from 'react-redux';
 
-const useScroll = (list, updateLoading) => {
+const useScroll = (list) => {
   const limit = 5;
+  const dispatch = useDispatch();
   const [page, setPage] = useState(1);
   // const refOfComponent = useRef(null);
   const refOfElement = useRef(null);
@@ -16,11 +21,11 @@ const useScroll = (list, updateLoading) => {
       console.log("scrollHeight", scrollHeight);
       console.log("clientHeight", clientHeight);
       if (scrollTop + clientHeight + 1 >= scrollHeight && lastItem < list.length) {
-        updateLoading(true);
+        dispatch(setLoading(true));
         setTimeout(() => {
           setPage(prevPage => prevPage + 1);
           console.log("page", page);
-          updateLoading(false);
+          dispatch(setLoading(false));
         }, 1000);
       }
     };
@@ -33,7 +38,7 @@ const useScroll = (list, updateLoading) => {
         element.removeEventListener('scroll', handleScrollToEnd);
       };
     }
-  }, [list, page, updateLoading]);
+  }, [list, page]);
 
   return {
     limit,

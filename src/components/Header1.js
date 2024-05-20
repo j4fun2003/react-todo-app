@@ -1,11 +1,17 @@
 import React, { useState, useRef, useContext, useImperativeHandle, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { ThemeContext } from '../assets/javascript/theme-context';
+import { useDispatch } from 'react-redux';
+import {
+  addItem,
+  updateItem,
+} from '../components/redux/actions';
 
-const Header = forwardRef(({ addItem, updateItem }, ref) => {
+const Header = forwardRef((props, ref) => {
   const { theme } = useContext(ThemeContext);
   const [itemId, setItemId] = useState(null);
   const inputRef = useRef();
+  const dispatch = useDispatch();
 
   useImperativeHandle(ref, () => ({
     updateState(itemId, content) {
@@ -19,12 +25,12 @@ const Header = forwardRef(({ addItem, updateItem }, ref) => {
     }
   }));
 
-  const handleOnkey = (event) => {
+  const handleOnKey = (event) => {
     if (event.key === 'Enter') {
       if (itemId) {
-        updateItem(inputRef.current.value);
+        dispatch(updateItem({ itemId, content: inputRef.current.value }));
       } else {
-        addItem(inputRef.current.value);
+        dispatch(addItem(inputRef.current.value));
       }
       inputRef.current.value = '';
       setItemId(null);
@@ -41,12 +47,13 @@ const Header = forwardRef(({ addItem, updateItem }, ref) => {
           ref={inputRef}
           className="input-text"
           placeholder="What needs to be done?"
-          onKeyDown={handleOnkey}
+          onKeyDown={handleOnKey}
         />
       </div>
     </header>
   );
 });
+
 
 Header.propTypes = {
   addItem: PropTypes.func.isRequired,

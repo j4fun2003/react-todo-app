@@ -1,24 +1,24 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { ThemeContext } from '../assets/javascript/theme-context';
-import { useDispatch} from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
   deleteCompleted,
-  setFilter,
-  FILTER
+  FILTER,
+  selectByStatus
 } from '../components/redux/actions';
 
-const Footer = ({ filter, list }) => {
+const Footer = () => {
   const { theme } = useContext(ThemeContext);
   const dispatch = useDispatch();
 
   const handleOnClick = (event) => {
-    dispatch(setFilter(event.target.name));
+    dispatch(selectByStatus(event.target.name));
   };
 
   const handleDeleteCompleted = () => {
-      dispatch(deleteCompleted());
-    };
+    dispatch(deleteCompleted());
+  };
 
 
 
@@ -27,13 +27,13 @@ const Footer = ({ filter, list }) => {
       <span className="todo-count col">{list[filter].length} item left</span>
       <ul className="filters col-5">
         <li className={filter === FILTER.ALL ? 'selected' : ''}>
-          <a href="#/" name={FILTER.ALL} onClick={handleOnClick} style={{ backgroundColor: theme.background, color: theme.foreground }}>All</a>
+          <a href="#/"  onClick={handleOnClick} style={{ backgroundColor: theme.background, color: theme.foreground }}>All</a>
         </li>
         <li className={filter === FILTER.ACTIVE ? 'selected' : ''}>
-          <a href="#/active" name={FILTER.ACTIVE} onClick={handleOnClick} style={{ backgroundColor: theme.background, color: theme.foreground }}>Active</a>
+          <a href="#/active" name={false} onClick={handleOnClick} style={{ backgroundColor: theme.background, color: theme.foreground }}>Active</a>
         </li>
         <li className={filter === FILTER.COMPLETED ? 'selected' : ''}>
-          <a href="#/completed" name={FILTER.COMPLETED} onClick={handleOnClick} style={{ backgroundColor: theme.background, color: theme.foreground }}>Completed</a>
+          <a href="#/completed" name={true} onClick={handleOnClick} style={{ backgroundColor: theme.background, color: theme.foreground }}>Completed</a>
         </li>
       </ul>
       <button className="clear-completed col" onClick={handleDeleteCompleted} style={{ backgroundColor: theme.background, color: theme.foreground }}>Clear completed</button>

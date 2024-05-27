@@ -8,14 +8,14 @@ import {
   toggleAll,
 } from '../components/redux/actions';
 
-const Content = ({ list }) => {
-  // const { list } = useSelector(state => state);
+const Content = () => {
+  const { items } = useSelector(state => state);
   const dispatch = useDispatch();
   const { theme } = useContext(ThemeContext);
-  const { refOfElement, page, limit } = useScroll(list);
+  const { refOfElement, page, limit } = useScroll(items);
   const startIndex = (page - 1) * limit;
   console.log("start", startIndex);
-  const itemsToShow = list.slice(0, startIndex + limit);
+  const itemsToShow = items.slice(0, startIndex + limit);
   console.log("item", itemsToShow);
 
   const handleToggleAll = () => {
@@ -25,7 +25,7 @@ const Content = ({ list }) => {
 
   return (
     <main style={{ backgroundColor: theme.background, color: theme.foreground }}>
-      {list.length > 0 && (
+      {items.length > 0 && (
         <input type="checkbox" className="select-all" onChange={handleToggleAll}></input>
       )}
       <div ref={refOfElement} style={{ overflowY: 'scroll', height: '200px' }}>
@@ -44,7 +44,7 @@ const Content = ({ list }) => {
 };
 
 Content.propTypes = {
-  list: PropTypes.array.isRequired,
+  items: PropTypes.array.isRequired,
   limit: PropTypes.number.isRequired,
   page: PropTypes.number.isRequired,
   handleToggleAll: PropTypes.func.isRequired,

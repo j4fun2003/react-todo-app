@@ -36,6 +36,7 @@ const TodoItem = ({item}) => {
               </button>
               <button className="col delete-item" onClick={() => handleDeleteItem(item.itemId)} style={{ backgroundColor: theme.background,color: theme.foreground}}>
                 <i className="fa fa-times" aria-hidden="true"></i>
+                
               </button>
             </>
         </div>

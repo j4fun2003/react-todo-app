@@ -23,7 +23,7 @@ export const addItem = (content) => {
   return async (dispatch , getState) => {
     try {
       const state = getState();
-      const currentItemCount = state.list.items.length;
+      const currentItemCount = state.items.items.length;
       const itemRef = ref(db, '/items/' + currentItemCount);
       const item = { itemId: currentItemCount, content, completed: false };
       await set(itemRef, item);
@@ -82,7 +82,9 @@ export const toggleAll = () => ({
 export const selectItem = (key) => {
   return (dispatch , getState) => {
   const state = getState();
+
   const item = state.items.filter(item => item.itemId === key);
+  debugger;
   dispatch({
     type: SELECT_ITEM,
     payload: item

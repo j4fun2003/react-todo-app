@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext , memo} from 'react';
 import { useSelector , useDispatch} from 'react-redux';
 import TodoItem from './TodoItem';
 import PropTypes from 'prop-types';
@@ -8,24 +8,22 @@ import {
   toggleAll,
 } from '../components/redux/actions';
 
-const Content = () => {
-  const { items } = useSelector(state => state);
+const Content = ({loading, setLoading}) => {
+  const {items} = useSelector(state => state);
+  console.log(items);
+  const list = [...items].filter(item => item && item.itemId).reverse();
   const dispatch = useDispatch();
   const { theme } = useContext(ThemeContext);
-  const { refOfElement, page, limit } = useScroll(items);
+  const { refOfElement, page, limit } = useScroll(list, loading , setLoading);
   const startIndex = (page - 1) * limit;
-  console.log("start", startIndex);
-  const itemsToShow = items.slice(0, startIndex + limit);
-  console.log("item", itemsToShow);
-
+  const itemsToShow = list.slice(0, startIndex + limit);
   const handleToggleAll = () => {
     dispatch(toggleAll());
   }
 
-
   return (
     <main style={{ backgroundColor: theme.background, color: theme.foreground }}>
-      {items.length > 0 && (
+      {list.length > 0 && (
         <input type="checkbox" className="select-all" onChange={handleToggleAll}></input>
       )}
       <div ref={refOfElement} style={{ overflowY: 'scroll', height: '200px' }}>
@@ -54,4 +52,4 @@ Content.propTypes = {
   updateLoading: PropTypes.func.isRequired
 };
 
-export default Content;
+export default memo(Content);

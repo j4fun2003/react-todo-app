@@ -1,18 +1,25 @@
-import React, { useContext } from 'react';
+import React, { useContext , memo} from 'react';
 import PropTypes from 'prop-types';
 import { ThemeContext } from '../assets/javascript/theme-context';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
 import {
   deleteCompleted,
   FILTER,
   selectByStatus
 } from '../components/redux/actions';
 
-const Footer = () => {
+
+
+const Footer =() => {
+  const {filter, items} = useSelector( state => state);
+
+
   const { theme } = useContext(ThemeContext);
   const dispatch = useDispatch();
 
   const handleOnClick = (event) => {
+    console.log(event.target.name);
     dispatch(selectByStatus(event.target.name));
   };
 
@@ -20,14 +27,12 @@ const Footer = () => {
     dispatch(deleteCompleted());
   };
 
-
-
   return (
     <footer id="nav" className="row" style={{ backgroundColor: theme.background, color: theme.foreground }}>
-      <span className="todo-count col">{list[filter].length} item left</span>
+      <span className="todo-count col">{items.length} item left</span>
       <ul className="filters col-5">
         <li className={filter === FILTER.ALL ? 'selected' : ''}>
-          <a href="#/"  onClick={handleOnClick} style={{ backgroundColor: theme.background, color: theme.foreground }}>All</a>
+          <a href="#/"  name={FILTER.ALL} onClick={handleOnClick} style={{ backgroundColor: theme.background, color: theme.foreground }}>All</a>
         </li>
         <li className={filter === FILTER.ACTIVE ? 'selected' : ''}>
           <a href="#/active" name={false} onClick={handleOnClick} style={{ backgroundColor: theme.background, color: theme.foreground }}>Active</a>
@@ -43,9 +48,9 @@ const Footer = () => {
 
 Footer.propTypes = {
   filter: PropTypes.string.isRequired,
-  list: PropTypes.object.isRequired,
+  items: PropTypes.object.isRequired,
   filterList: PropTypes.func.isRequired,
   handleDeleteCompleted: PropTypes.func.isRequired
 };
 
-export default Footer;
+export default memo(Footer);

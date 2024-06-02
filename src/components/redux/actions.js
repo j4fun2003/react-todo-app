@@ -1,7 +1,6 @@
 
-import {getDatabase , set , ref, update, remove , get} from 'firebase/database';
-import {app} from '../database/firebase'
-import { v4 as uuidv4 } from 'uuid';
+import { getDatabase, set, ref, update, remove, get } from 'firebase/database';
+import { app } from '../database/firebase'
 export const ADD_ITEM = 'ADD_ITEM';
 export const TOGGLE_ITEM_STATUS = 'TOGGLE_ITEM_STATUS';
 export const DELETE_ITEM = 'DELETE_ITEM';
@@ -13,14 +12,21 @@ export const SET_LOADING = 'SET_LOADING';
 export const SET_FILTER = 'SET_FILTER';
 export const FETCH_DATA = 'FETCH_DATA';
 export const SELECT_STATUS = 'SELECT_STATUS';
+export const FILTER = {
+  ALL: 'ALL',
+  ACTIVE: false,
+  COMPLETED: true
+}
 const db = getDatabase(app);
 
 export const addItem = (content) => {
-  return async (dispatch) => {
+  return async (dispatch , getState) => {
     try {
-      const itemId = uuidv4().toString();
-      const item = {itemId: itemId ,content, completed: false };
-      await set( ref (db, 'items/'+ itemId), item);   
+      const state = getState();
+      const currentItemCount = state.list.items.length;
+      const itemRef = ref(db, '/items/' + currentItemCount);
+      const item = { itemId: currentItemCount, content, completed: false };
+      await set(itemRef, item);
       dispatch({
         type: ADD_ITEM,
         payload: item
@@ -34,15 +40,19 @@ export const addItem = (content) => {
 export const toggleItemStatus = (key) => {
   return async (dispatch) => {
     try {
-      await update(ref(db, '/users/' + key), {
-        // completed: !completed,
-      })
+      const itemRef = ref(db, '/items/' + key);
+      const item = (await get(itemRef)).val();
+      const updatedItem = {
+        ...item,
+        completed: !item.completed,
+      };
+      await update(itemRef, updatedItem);
       dispatch({
         type: TOGGLE_ITEM_STATUS,
         payload: key
       });
     } catch (error) {
-      console.error('Error toggling item status: ', error);
+      console.error('Error: ', error);
     }
   };
 };
@@ -50,7 +60,7 @@ export const toggleItemStatus = (key) => {
 export const deleteItem = (key) => {
   return async (dispatch) => {
     try {
-      await remove(ref(db,'/items/'+key));
+      await remove(ref(db, '/items/' + key));
       dispatch({
         type: DELETE_ITEM,
         payload: key
@@ -70,25 +80,26 @@ export const toggleAll = () => ({
 });
 
 export const selectItem = (key) => {
-  return async (dispatch) => {
-    try{
-      await get(ref(db, 'items/' + key));
-      dispatch({
-        type: SELECT_ITEM,
-        payload: key
-      })
-    }catch(error){
-      console.error('Error selecting item: ', error);
-    }
-  }
+  return (dispatch , getState) => {
+  const state = getState();
+  const item = state.items.filter(item => item.itemId === key);
+  dispatch({
+    type: SELECT_ITEM,
+    payload: item
+  });
+};
 };
 
 export const updateItem = (key, content) => {
   return async (dispatch) => {
     try {
-      await update(ref(db,'/items/' + key), {
-        // content: content
-      });
+      const itemRef = ref(db, '/items/' + key);
+      const item = (await get(itemRef)).val();
+      const updatedItem = {
+        ...item,
+        content: content,
+      };
+      await update(itemRef, updatedItem);
       dispatch({
         type: UPDATE_ITEM,
         payload: { key, content }
@@ -100,9 +111,9 @@ export const updateItem = (key, content) => {
 };
 
 
-export const fetchData = (items) => ({
+export const fetchData = (data) => ({
   type: FETCH_DATA,
-  payload: items
+  payload: data
 });
 
 export const setLoading = (loading) => ({

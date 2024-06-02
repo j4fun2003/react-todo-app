@@ -21,7 +21,7 @@ const TodoItem = ({item}) => {
     }
 
     const handleSelect = (id) => {
-      console.log('select', id);
+      console.log(id);
       dispatch(selectItem(id));
       }
 

@@ -1,41 +1,28 @@
-import React, { useState, useRef, useContext, useImperativeHandle, forwardRef } from 'react';
+import React, { useRef, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { ThemeContext } from '../assets/javascript/theme-context';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   addItem,
   updateItem,
 } from '../components/redux/actions';
 
-const Header = forwardRef((props, ref) => {
+const Header = () => {
   const { theme } = useContext(ThemeContext);
-  const [itemId, setItemId] = useState(null);
+  const {selectedItem} = useSelector(state => state.selectedItem);
+  console.log("select",selectedItem);
   const inputRef = useRef();
   const dispatch = useDispatch();
 
-
-
-  useImperativeHandle(ref, () => ({
-    updateState(itemId, content) {
-      setItemId(itemId);
-      console.log(itemId);
-      inputRef.current.value = content;
-      inputRef.current.focus();
-    },
-    getItemId() {
-      return itemId;
-    }
-  }));
-
   const handleOnKey = (event) => {
     if (event.key === 'Enter') {
-      if (itemId) {
-        dispatch(updateItem({ itemId, content: inputRef.current.value }));
+      console.log(selectedItem);
+      if (selectedItem) {
+        dispatch(updateItem({ selectedItem , content: inputRef.current.value }));
       } else {
         dispatch(addItem(inputRef.current.value));
       }
       inputRef.current.value = '';
-      setItemId(null);
     }
   };
 
@@ -54,7 +41,7 @@ const Header = forwardRef((props, ref) => {
       </div>
     </header>
   );
-});
+};
 
 
 Header.propTypes = {

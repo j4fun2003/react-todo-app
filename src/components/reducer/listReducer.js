@@ -11,21 +11,20 @@ const listReducer = (state = initialState, action) => {
     case FETCH_DATA:
       return produce(state, (draft) => {
         draft.items = action.payload;
-        console.log(action.payload);
       });
     case ADD_ITEM:
       return produce(state, (draft) => {
         draft.items.push(action.payload);
       });
-    case TOGGLE_ITEM_STATUS:
-      return produce(state, (draft) => {
-        const item = draft.items.find(item => item.itemId == action.payload);
-        if (item) {
-          item.completed = !item.completed;
-        }else{
-          console.log("khong ton tai");
-        }
-      });
+      case TOGGLE_ITEM_STATUS:
+        const updatedItems = state.items.map(item =>
+          item.itemId === action.payload ? { ...item, completed: !item.completed } : item
+        );
+        return {
+          ...state,
+          items: updatedItems
+        };
+  
 
     case DELETE_ITEM:
       return produce(state, (draft) => {
@@ -46,13 +45,15 @@ const listReducer = (state = initialState, action) => {
       });
 
     case UPDATE_ITEM:
-      return produce(state, (draft) => {
-        const { itemId, content } = action.payload;
-        const item = draft.items.find(item => item.itemId === itemId);
-        if (item) {
-          item.content = content;
-        }
-      });
+        const { key , content } = action.payload;
+        const oldItem = key.itemId;
+        const newItems = state.items.map(item =>
+          item.itemId === oldItem ? { ...item, content: content } : item
+        );
+        return {
+          ...state,
+          items: newItems
+        };
     case SELECT_STATUS:
       return produce(state, (draft) => {
         if(action.payload === true) {

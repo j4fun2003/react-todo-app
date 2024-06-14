@@ -1,14 +1,13 @@
-import { SELECT_ITEM } from '../redux/actions';
-import { produce } from 'immer';
+import { SELECT_ITEM , CLEAR_SELECTED_ITEM} from '../redux/actions';
 
-const initialState = {};
+const initialState = null;
 
 const selectedItemReducer = (state = initialState, action) => {
   switch (action.type) {
     case SELECT_ITEM:
-      return produce(state, draft => {
-        return action.payload;
-      });
+      return action.payload;
+    case CLEAR_SELECTED_ITEM:
+      return null;
     default:
       return state;
   }

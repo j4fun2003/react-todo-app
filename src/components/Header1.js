@@ -9,16 +9,17 @@ import {
 
 const Header = () => {
   const { theme } = useContext(ThemeContext);
-  const {selectedItem} = useSelector(state => state.selectedItem);
-  console.log("select",selectedItem);
+  const selectedItem = useSelector(state => state.selectedItem);
+  debugger;
   const inputRef = useRef();
   const dispatch = useDispatch();
 
   const handleOnKey = (event) => {
     if (event.key === 'Enter') {
-      console.log(selectedItem);
+      const inputValue = inputRef.current.value.trim();
+      if (inputValue === '') return;
       if (selectedItem) {
-        dispatch(updateItem({ selectedItem , content: inputRef.current.value }));
+        dispatch(updateItem( selectedItem ,  inputRef.current.value ));
       } else {
         dispatch(addItem(inputRef.current.value));
       }
@@ -30,13 +31,14 @@ const Header = () => {
     <header>
       <h1 className="title">todos</h1>
       <div className="input-area">
-        <input
+      <input
           type="text"
           style={{ backgroundColor: theme.background, color: theme.foreground }}
           ref={inputRef}
           className="input-text"
           placeholder="What needs to be done?"
           onKeyDown={handleOnKey}
+          defaultValue={selectedItem ? selectedItem.content : ''}
         />
       </div>
     </header>

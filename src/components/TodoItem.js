@@ -20,9 +20,8 @@ const TodoItem = ({item}) => {
       dispatch(deleteItem(id));
     }
 
-    const handleSelect = (id) => {
-      console.log(id);
-      dispatch(selectItem(id));
+    const handleSelect = (item) => {
+      dispatch(selectItem(item));
       }
 
     return (
@@ -31,7 +30,7 @@ const TodoItem = ({item}) => {
             <>
               <input type="checkbox"  checked={item.completed} onChange={() => handleStatus(item.itemId)} className="select-item col" />
               <label htmlFor="item" className="item col-9">{item.content}</label>
-              <button className="col edit-item" onClick={() => handleSelect(item.itemId)} style={{ backgroundColor: theme.background,color: theme.foreground}}>
+              <button className="col edit-item" onClick={() => handleSelect(item)} style={{ backgroundColor: theme.background,color: theme.foreground}}>
                 <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
               </button>
               <button className="col delete-item" onClick={() => handleDeleteItem(item.itemId)} style={{ backgroundColor: theme.background,color: theme.foreground}}>

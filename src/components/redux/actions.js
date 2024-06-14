@@ -1,121 +1,69 @@
 
-import { getDatabase, set, ref, update, remove, get } from 'firebase/database';
-import { app } from '../database/firebase'
 export const ADD_ITEM = 'ADD_ITEM';
+export const ADD_ITEM_REQUEST = 'ADD_ITEM_REQUEST';
 export const TOGGLE_ITEM_STATUS = 'TOGGLE_ITEM_STATUS';
+export const TOGGLE_ITEM_STATUS_REQUEST = 'TOGGLE_ITEM_STATUS_REQUEST';
 export const DELETE_ITEM = 'DELETE_ITEM';
+export const DELETE_ITEM_REQUEST = 'DELETE_ITEM_REQUEST';
 export const DELETE_COMPLETED = 'DELETE_COMPLETED';
+export const DELETE_COMPLETED_REQUEST = 'DELETE_COMPLETED_REQUEST';
 export const TOGGLE_ALL = 'TOGGLE_ALL';
 export const SELECT_ITEM = 'SELECT_ITEM';
+export const CLEAR_SELECTED_ITEM = 'CLEAR_SELECTED_ITEM';
 export const UPDATE_ITEM = 'UPDATE_ITEM';
+export const UPDATE_ITEM_REQUEST = 'UPDATE_ITEM_REQUEST';
 export const SET_LOADING = 'SET_LOADING';
 export const SET_FILTER = 'SET_FILTER';
 export const FETCH_DATA = 'FETCH_DATA';
+export const FETCH_DATA_REQUEST = 'FETCH_DATA_REQUEST';
 export const SELECT_STATUS = 'SELECT_STATUS';
 export const FILTER = {
   ALL: 'ALL',
   ACTIVE: false,
   COMPLETED: true
 }
-const db = getDatabase(app);
 
-export const addItem = (content) => {
-  return async (dispatch , getState) => {
-    try {
-      const state = getState();
-      const currentItemCount = state.items.items.length;
-      const itemRef = ref(db, '/items/' + currentItemCount);
-      const item = { itemId: currentItemCount, content, completed: false };
-      await set(itemRef, item);
-      dispatch({
-        type: ADD_ITEM,
-        payload: item
-      });
-    } catch (error) {
-      console.error('Error adding item: ', error);
-    }
-  };
-};
+export const addItem = (content) => ({
+  type: ADD_ITEM_REQUEST,
+  payload: content
+});
 
-export const toggleItemStatus = (key) => {
-  return async (dispatch) => {
-    try {
-      const itemRef = ref(db, '/items/' + key);
-      const item = (await get(itemRef)).val();
-      const updatedItem = {
-        ...item,
-        completed: !item.completed,
-      };
-      await update(itemRef, updatedItem);
-      dispatch({
-        type: TOGGLE_ITEM_STATUS,
-        payload: key
-      });
-    } catch (error) {
-      console.error('Error: ', error);
-    }
-  };
-};
+export const toggleItemStatus = (key) => ({
+  type: TOGGLE_ITEM_STATUS_REQUEST,
+  payload: key
+});
 
-export const deleteItem = (key) => {
-  return async (dispatch) => {
-    try {
-      await remove(ref(db, '/items/' + key));
-      dispatch({
-        type: DELETE_ITEM,
-        payload: key
-      });
-    } catch (error) {
-      console.error('Error deleting item: ', error);
-    }
-  };
-};
+export const deleteItem = (key) => ({
+  type: DELETE_ITEM_REQUEST,
+  payload: key
+});
 
 export const deleteCompleted = () => ({
-  type: DELETE_COMPLETED
+  type: DELETE_COMPLETED_REQUEST
 });
+
 
 export const toggleAll = () => ({
   type: TOGGLE_ALL
 });
 
-export const selectItem = (key) => {
-  return (dispatch , getState) => {
-  const state = getState();
+export const selectItem = (key) => ({
+  type: SELECT_ITEM,
+  payload: key
+});
 
-  const item = state.items.filter(item => item.itemId === key);
-  debugger;
-  dispatch({
-    type: SELECT_ITEM,
-    payload: item
-  });
-};
-};
+export const clearSelectedItem = () => ({
+  type: CLEAR_SELECTED_ITEM
+});
 
-export const updateItem = (key, content) => {
-  return async (dispatch) => {
-    try {
-      const itemRef = ref(db, '/items/' + key);
-      const item = (await get(itemRef)).val();
-      const updatedItem = {
-        ...item,
-        content: content,
-      };
-      await update(itemRef, updatedItem);
-      dispatch({
-        type: UPDATE_ITEM,
-        payload: { key, content }
-      });
-    } catch (error) {
-      console.error('Error updating item: ', error);
-    }
-  };
-};
+export const updateItem = (item, content) => ({
+  type: UPDATE_ITEM_REQUEST,
+  payload: { item, content }
+  
+});
 
-
-export const fetchData = (data) => ({
-  type: FETCH_DATA,
-  payload: data
+export const fetchData = () => ({
+  type: FETCH_DATA_REQUEST,
 });
 
 export const setLoading = (loading) => ({

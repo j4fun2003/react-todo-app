@@ -5,28 +5,16 @@ import Header from './components/Header1';
 import Content from './components/Content';
 import Footer from './components/Footer1';
 import Toolbar from './components/Toolbar';
-
-import { fetchData } from './components/redux/actions'
-import { getDatabase, ref, get} from "firebase/database";
-import { app } from './components/database/firebase'
+import { fetchData } from './components/redux/actions';
 const ModalLoading = lazy(() => import('./components/Loading'));
-
-const db = getDatabase(app);
 
 const App = () => {
   const [loading, setLoading] = useState(false);
   const headerRef = useRef();
   const dispatch = useDispatch();
+
   useEffect(() => {
-    const fetchItems = async () => {
-        await get(ref(db, `items`)).then((snapshot) => {
-        const data = snapshot.val();
-        dispatch(fetchData(data));
-      }). catch ((error) => {
-        console.error('Error : ', error);
-      });
-    };
-    fetchItems();
+    dispatch(fetchData());
   }, [dispatch]);
 
   return (

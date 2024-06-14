@@ -10,7 +10,6 @@ import {
 
 const Content = ({loading, setLoading}) => {
   const {items} = useSelector(state => state.items);
-  console.log(items);
   const list = [...items].filter(item => item && item.itemId).reverse();
   const dispatch = useDispatch();
   const { theme } = useContext(ThemeContext);

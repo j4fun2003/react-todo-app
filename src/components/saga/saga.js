@@ -1,12 +1,13 @@
-import { call, put, takeEvery, select } from 'redux-saga/effects';
-import { addItemToDatabase, toggleItemStatusInDatabase, deleteItemFromDatabase, updateItemInDatabase , fetchDataInDatabase , deleteCompletedInDatabase} from '../api/api';
-import { 
-  ADD_ITEM_REQUEST, ADD_ITEM, 
-  TOGGLE_ITEM_STATUS_REQUEST, TOGGLE_ITEM_STATUS, 
-  DELETE_ITEM_REQUEST, DELETE_ITEM, 
+import { call, put, takeEvery, select ,all} from 'redux-saga/effects';
+import { addItemToDatabase, toggleItemStatusInDatabase, toggleAllInDatabase ,deleteItemFromDatabase, updateItemInDatabase, fetchDataInDatabase, deleteCompletedInDatabase } from '../api/api';
+import {
+  ADD_ITEM_REQUEST, ADD_ITEM,
+  TOGGLE_ITEM_STATUS_REQUEST, TOGGLE_ITEM_STATUS,
+  DELETE_ITEM_REQUEST, DELETE_ITEM,
   UPDATE_ITEM_REQUEST, UPDATE_ITEM,
   FETCH_DATA_REQUEST, FETCH_DATA,
-  DELETE_COMPLETED_REQUEST, DELETE_COMPLETED, CLEAR_SELECTED_ITEM
+  DELETE_COMPLETED_REQUEST, DELETE_COMPLETED, CLEAR_SELECTED_ITEM,
+  TOGGLE_ALL_REQUEST , TOGGLE_ALL
 } from '../redux/actions';
 
 function* addItemSaga(action) {
@@ -21,15 +22,35 @@ function* addItemSaga(action) {
   }
 }
 
+function* watchAddItem() {
+  yield takeEvery(ADD_ITEM_REQUEST, addItemSaga);
+}
+
 function* toggleItemStatusSaga(action) {
   try {
-    yield put({ type: TOGGLE_ITEM_STATUS, payload: action.payload});
+    yield put({ type: TOGGLE_ITEM_STATUS, payload: action.payload });
     yield call(toggleItemStatusInDatabase, action.payload);
   } catch (error) {
     console.error('Error: ', error);
   }
 }
 
+function* watchToggleItemStatus() {
+  yield takeEvery(TOGGLE_ITEM_STATUS_REQUEST, toggleItemStatusSaga);
+}
+
+function* toggleAllToggleItemStatus() {
+  try{
+    yield put({type : TOGGLE_ALL});
+    yield call(toggleAllInDatabase);
+  }catch(error){
+    console.error('Error' + error);
+  }
+}
+
+function* watchToggleAll() {
+  yield takeEvery(TOGGLE_ALL_REQUEST, toggleAllToggleItemStatus);
+}
 
 function* deleteItemSaga(action) {
   try {
@@ -40,13 +61,21 @@ function* deleteItemSaga(action) {
   }
 }
 
-function* deletedCompleted(){
-  try{
+function* watchDeleteItem() {
+  yield takeEvery(DELETE_ITEM_REQUEST, deleteItemSaga);
+}
+
+function* deletedCompleted() {
+  try {
     yield put({ type: DELETE_COMPLETED });
     yield call(deleteCompletedInDatabase);
-  }catch (error) {
+  } catch (error) {
     console.error('Error deleting item: ', error);
   }
+}
+
+function* watchDeleteCompleted() {
+  yield takeEvery(DELETE_COMPLETED_REQUEST, deletedCompleted);
 }
 
 function* updateItemSaga(action) {
@@ -60,22 +89,35 @@ function* updateItemSaga(action) {
   }
 }
 
+function* watchUpdateItem() {
+  yield takeEvery(UPDATE_ITEM_REQUEST, updateItemSaga);
+}
+
 function* fetchData() {
-    try{
-        const data = yield call(fetchDataInDatabase);
-        yield put({type: FETCH_DATA , payload: data});
-    } catch (error) {
-        console.error('Error fetch item: ', error);
-      }
+  try {
+    const data = yield call(fetchDataInDatabase);
+    yield put({ type: FETCH_DATA, payload: data });
+  } catch (error) {
+    console.error('Error fetch item: ', error);
+  }
+}
+
+function* watchFetchData() {
+  yield takeEvery(FETCH_DATA_REQUEST, fetchData);
 }
 
 function* rootSaga() {
-  yield takeEvery(ADD_ITEM_REQUEST, addItemSaga);
-  yield takeEvery(TOGGLE_ITEM_STATUS_REQUEST, toggleItemStatusSaga);
-  yield takeEvery(DELETE_ITEM_REQUEST, deleteItemSaga);
-  yield takeEvery(UPDATE_ITEM_REQUEST, updateItemSaga);
-  yield takeEvery(FETCH_DATA_REQUEST, fetchData);
-  yield takeEvery(DELETE_COMPLETED_REQUEST, deletedCompleted);
+  yield all(
+    [
+      watchAddItem(),
+      watchToggleItemStatus(),
+      watchDeleteItem(),
+      watchDeleteCompleted(),
+      watchUpdateItem(),
+      watchFetchData(),
+      watchToggleAll()
+    ]
+  )
 }
 
 export default rootSaga;

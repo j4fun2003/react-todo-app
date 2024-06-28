@@ -1,4 +1,4 @@
-import React, { useRef, useContext } from 'react';
+import React, { useRef, useContext , useState , useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ThemeContext } from '../assets/javascript/theme-context';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,33 +12,47 @@ const Header = () => {
   const selectedItem = useSelector(state => state.selectedItem);
   debugger;
   const inputRef = useRef();
+  const [inputValue, setInputValue] = useState('');
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (selectedItem) {
+      setInputValue(selectedItem.content || '');
+    } else {
+      setInputValue('');
+    }
+  }, [selectedItem]);
 
   const handleOnKey = (event) => {
     if (event.key === 'Enter') {
       const inputValue = inputRef.current.value.trim();
       if (inputValue === '') return;
       if (selectedItem) {
-        dispatch(updateItem( selectedItem ,  inputRef.current.value ));
+        dispatch(updateItem( selectedItem , inputValue ));
       } else {
-        dispatch(addItem(inputRef.current.value));
+        dispatch(addItem(inputValue));
       }
-      inputRef.current.value = '';
+      setInputValue('');
     }
+  };
+
+  const handleChange = (event) => {
+    setInputValue(event.target.value);
   };
 
   return (
     <header>
       <h1 className="title">todos</h1>
       <div className="input-area">
-      <input
+        <input
           type="text"
           style={{ backgroundColor: theme.background, color: theme.foreground }}
           ref={inputRef}
           className="input-text"
           placeholder="What needs to be done?"
           onKeyDown={handleOnKey}
-          defaultValue={selectedItem ? selectedItem.content : ''}
+          value={inputValue}
+          onChange={handleChange}
         />
       </div>
     </header>

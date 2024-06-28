@@ -22,6 +22,19 @@ export const toggleItemStatusInDatabase = async (key) => {
   return updatedItem;
 };
 
+export const toggleAllInDatabase = async () => {
+  debugger
+  const itemRef = ref(db, '/items');
+  const snapshot = await get(itemRef);
+  const items = snapshot.val();
+  console.log("Items: " + items);
+  const allCompleted = items.every(item => item.completed);
+  console.log("All completed: " + allCompleted);
+  allCompleted.forEach(item => {
+    update()
+  })
+}
+
 export const deleteItemFromDatabase = async (key) => {
   const itemRef = ref(db, '/items/' + key);
   await remove(itemRef);

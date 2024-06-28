@@ -8,6 +8,7 @@ export const DELETE_ITEM_REQUEST = 'DELETE_ITEM_REQUEST';
 export const DELETE_COMPLETED = 'DELETE_COMPLETED';
 export const DELETE_COMPLETED_REQUEST = 'DELETE_COMPLETED_REQUEST';
 export const TOGGLE_ALL = 'TOGGLE_ALL';
+export const TOGGLE_ALL_REQUEST = 'TOGGLE_ALL_REQUEST';
 export const SELECT_ITEM = 'SELECT_ITEM';
 export const CLEAR_SELECTED_ITEM = 'CLEAR_SELECTED_ITEM';
 export const UPDATE_ITEM = 'UPDATE_ITEM';
@@ -44,7 +45,7 @@ export const deleteCompleted = () => ({
 
 
 export const toggleAll = () => ({
-  type: TOGGLE_ALL
+  type: TOGGLE_ALL_REQUEST
 });
 
 export const selectItem = (key) => ({

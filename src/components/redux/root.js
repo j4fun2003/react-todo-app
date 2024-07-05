@@ -3,10 +3,10 @@ import listReducer from '../reducer/listReducer';
 import filterReducer from '../reducer/filterReducer';
 import selectedItemReducer from '../reducer/selectReducer';
 
-const rootReducer = combineReducers({
+const rootReducer = {
     items: listReducer,
-    filter: filterReducer,
-    selectedItem: selectedItemReducer,
-  });
+    // filter: filterReducer,
+    // selectedItem: selectedItemReducer,
+  };
   
-  export default rootReducer;   
+  export default rootReducer;

@@ -8,6 +8,8 @@ import {
   FILTER,
   selectByStatus
 } from '../components/redux/actions';
+import store from './redux/store';
+import filterReducer from './reducer/filterReducer';
 
 
 
@@ -21,6 +23,7 @@ const Footer =() => {
   const handleOnClick = (event) => {
     console.log(event.target.name);
     dispatch(selectByStatus(event.target.name));
+    store.reducerManager.add('filter', filterReducer);
   };
 
   const handleDeleteCompleted = () => {

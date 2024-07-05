@@ -2,11 +2,13 @@ import React , {useContext} from "react";
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { ThemeContext } from "../assets/javascript/theme-context";
+import selectedItemReducer from './reducer/selectReducer';
 import {
   toggleItemStatus,
   deleteItem,
   selectItem
 } from '../components/redux/actions';
+import store from "./redux/store";
 
 const TodoItem = ({item}) => {
     const {theme} = useContext(ThemeContext);
@@ -21,6 +23,7 @@ const TodoItem = ({item}) => {
     }
 
     const handleSelect = (item) => {
+      store.reducerManager.add('selectedItem', selectedItemReducer);
       dispatch(selectItem(item));
       }
 

@@ -2,15 +2,16 @@ import React, { useRef, useContext , useState , useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ThemeContext } from '../assets/javascript/theme-context';
 import { useDispatch, useSelector } from 'react-redux';
+import store  from './redux/store';
 import {
   addItem,
   updateItem,
 } from '../components/redux/actions';
+import selectedItemReducer from './reducer/selectReducer';
 
 const Header = () => {
   const { theme } = useContext(ThemeContext);
   const selectedItem = useSelector(state => state.selectedItem);
-  debugger;
   const inputRef = useRef();
   const [inputValue, setInputValue] = useState('');
   const dispatch = useDispatch();
@@ -19,6 +20,7 @@ const Header = () => {
     if (selectedItem) {
       setInputValue(selectedItem.content || '');
     } else {
+      store.reducerManager.remove('select', selectedItemReducer);
       setInputValue('');
     }
   }, [selectedItem]);
